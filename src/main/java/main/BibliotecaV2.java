@@ -358,9 +358,4 @@ public class BibliotecaV2 {
         gf.importar(autorias,libros);
         System.out.println("Datos importados al programa desde el archivo 'biblioteca.bin'");
     }
-
-    public static void guardarEnBBDD(){
-        Conexion.crearTablas();
-        //TODO
-    }
 }
