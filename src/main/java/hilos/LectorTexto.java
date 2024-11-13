@@ -22,6 +22,9 @@ public class LectorTexto extends Thread{
     public void run(){
 
         synchronized (file){
+            autorias.clear();
+            libros.clear();
+
             try(BufferedReader br = new BufferedReader(new FileReader(file))){
 
                 String line = br.readLine();
@@ -29,7 +32,7 @@ public class LectorTexto extends Thread{
                 while(!(line = br.readLine()).equals("***LIB***")){
 
                     //Atributos necesarios para crear el objeto 'Autoria'
-                    String id = line;
+                    int id = Integer.parseInt(line);
                     line = br.readLine();
                     String nombre = line;
                     line = br.readLine();
@@ -48,9 +51,9 @@ public class LectorTexto extends Thread{
 
                     //Recuperar del ArrayList 'autorias' el objeto 'Autoria' que coincide con el ID del documento.
                     Autoria autoria = null;
-                    String idAutoria = line;
+                    int idAutoria = Integer.parseInt(line);
                     for(Autoria a : autorias){
-                        if(a.getId().equals(idAutoria)) autoria = new Autoria(a.getId(),a.getNombre(),a.getApellido());
+                        if(a.getId() == idAutoria) autoria = new Autoria(a.getId(),a.getNombre(),a.getApellido());
                     }
 
                     //Creación de 'Libro' dentro del ArrayList
@@ -58,9 +61,11 @@ public class LectorTexto extends Thread{
                 }
 
             } catch (FileNotFoundException e) {
-                e.printStackTrace(); //TODO: buen mensaje de error
+                System.err.println("Fichero no encontrado: " + e.getMessage());
             } catch (IOException e) {
-                e.printStackTrace(); //TODO: buen mensaje de error
+                System.err.println("Error: " + e.getMessage());
+            } catch (NullPointerException e){
+                System.err.println("Fichero vacio: " + e.getMessage());
             }
         }
     }

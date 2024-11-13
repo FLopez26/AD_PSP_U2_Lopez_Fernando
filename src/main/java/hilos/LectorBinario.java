@@ -21,17 +21,18 @@ public class LectorBinario extends Thread {
     public void run() {
 
         synchronized (file){
+            autorias.clear();
+            libros.clear();
+
             try (ObjectInputStream ois = new ObjectInputStream(new FileInputStream(file))) {
 
                 autorias.addAll((ArrayList<Autoria>) ois.readObject());
                 libros.addAll((ArrayList<Libro>) ois.readObject());
 
             } catch (FileNotFoundException e) {
-                e.printStackTrace(); //TODO: buen mensaje de error
-            } catch (IOException e) {
-                e.printStackTrace(); //TODO: buen mensaje de error
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace(); //TODO: buen mensaje de error
+                System.err.println("Fichero no encontrado: " + e.getMessage());
+            } catch (IOException | ClassNotFoundException e) {
+                System.err.println("Error: " + e.getMessage());
             }
         }
     }

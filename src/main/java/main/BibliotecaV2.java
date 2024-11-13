@@ -2,6 +2,9 @@ package main;
 
 import clases.Autoria;
 import clases.Libro;
+import dao.AutoriaDAO;
+import dao.Conexion;
+import dao.LibroDAO;
 import hilos.GestionaFicherosV2;
 
 import java.io.File;
@@ -12,17 +15,23 @@ import java.util.InputMismatchException;
 import java.util.Scanner;
 
 public class BibliotecaV2 {
-    private static final ArrayList<Autoria> autorias = new ArrayList<Autoria>();
-    private static final ArrayList<Libro> libros = new ArrayList<Libro>();
+    private static ArrayList<Autoria> autorias = new ArrayList<Autoria>();
+    private static ArrayList<Libro> libros = new ArrayList<Libro>();
 
     public static void main(String[] args){
         Scanner sc = new Scanner(System.in);
         int opc = -1;
-        leerBin();
+
+        System.out.println("---------------------------------");
+        Conexion.crearTablas();
+        System.out.println("Tablas de la BBDD creadas en caso de que no estuvieran.");
+        autorias = AutoriaDAO.readAll();
+        libros = LibroDAO.readAll();
+        System.out.println("Información recogida de la BBDD en caso de que hubiera.");
 
         while(opc!=0){
             System.out.println("---------------------------------");
-            System.out.println("Bienvenido a la Práctica 1. Seleccione una de las siguientes opciones:");
+            System.out.println("Bienvenido a la Práctica 2. Seleccione una de las siguientes opciones:");
             System.out.println(" 1.- Crear autor");
             System.out.println(" 2.- Ver autores");
             System.out.println(" 3.- Crear libro");
@@ -65,7 +74,9 @@ public class BibliotecaV2 {
                         leerBin();
                         break;
                     case 0:
-                        escribirBin();
+                        AutoriaDAO.createOrUpdateAll(autorias);
+                        LibroDAO.createOrUpdateAll(libros);
+                        System.out.println("Datos guardados en la BBDD.");
                         System.out.println("Saliendo del programa.");
                         break;
                     default:
@@ -88,10 +99,10 @@ public class BibliotecaV2 {
      * @param id
      * @return
      */
-    public static boolean checkId(String id){
+    public static boolean checkId(int id){
         boolean existe = false;
         for (Autoria a : autorias){
-            if (a.getId().equals(id)) {
+            if (a.getId() == id) {
                 existe = true;
                 break;
             }
@@ -145,25 +156,26 @@ public class BibliotecaV2 {
         System.out.println(" - CREACIÓN DE AUTOR - ");
 
         //Iniciación de las variables
-        String id = "";
+        int id = -1;
         String nombre = "";
         String apellido = "";
 
         try{
             System.out.print("Introduzca el ID: ");
-            id = sc.next();
+            id = sc.nextInt();
             if(checkId(id)){
                 System.err.println("Existe un autor con el mismo ID.");
                 return;
             }
+            Scanner sc2 = new Scanner(System.in);
+            System.out.println("Introduzca el nombre:");
+            nombre = sc2.nextLine();
 
-            System.out.print("Introduzca el nombre: ");
-            nombre = sc.nextLine();
-
-            System.out.print("Introduzca el apellido: ");
-            apellido = sc.nextLine();
+            System.out.println("Introduzca el apellido:");
+            apellido = sc2.nextLine();
 
             autorias.add(new Autoria(id,nombre,apellido));
+            AutoriaDAO.create(new Autoria(id,nombre,apellido));
         } catch (InputMismatchException e){
             System.err.println("No es un número");
             String error = sc.nextLine();
@@ -189,7 +201,7 @@ public class BibliotecaV2 {
      */
     public static void crearLibro(){
         Scanner sc = new Scanner(System.in);
-        System.out.println(" - CREACIÓN DE AUTOR - ");
+        System.out.println(" - CREACIÓN DE LIBRO - ");
 
         //Iniciación de las variables
         String isbn = "";
@@ -208,7 +220,7 @@ public class BibliotecaV2 {
             nombre = sc.nextLine();
 
             System.out.println("Introduzca el ID del autor");
-            String id = sc.next();
+            int id = sc.nextInt();
             if(!checkId(id)){
                 System.err.println("No existe un autor con ese ID.");
                 return;
@@ -218,6 +230,7 @@ public class BibliotecaV2 {
             }
 
             libros.add(new Libro(isbn,nombre,autor));
+            LibroDAO.create(new Libro(isbn,nombre,autor));
         } catch (InputMismatchException e){
             System.err.println("No es un número");
             String error = sc.nextLine();
@@ -249,6 +262,7 @@ public class BibliotecaV2 {
             String isbn = sc.nextLine();
             if(checkIsbn(isbn)){
                 deleteLibro(isbn);
+                LibroDAO.delete(isbn);
                 sigue = false;
             } else{
                 System.out.println("El ISBN no pertenece a ningún libro, puede:");
@@ -292,11 +306,7 @@ public class BibliotecaV2 {
             if(opcion.equals("s")){
                 GestionaFicherosV2 gf = new GestionaFicherosV2();
                 //Aquí se realiza la gestión de excepciones que se puede generar en la clase 'GestionaFicheros'
-                try{
-                    gf.exportar(file,autorias,libros);
-                } catch (IOException e) {
-                    System.err.println("Error: "+ e.getMessage());
-                }
+                gf.exportar(file,autorias,libros);
 
             }else if(opcion.equals("n")){
                 System.out.println("Volviendo al menú.");
@@ -321,12 +331,9 @@ public class BibliotecaV2 {
         System.out.println("Es necesario incluir la ruta completa. Ejemplo: ./files/archivo.txt");
         File file = new File(sc.nextLine());
 
-        try{
-            GestionaFicherosV2 gf = new GestionaFicherosV2();
-            gf.importarTexto(file,autorias,libros);
-        } catch (IOException e) {
-            System.err.println("Error: " + e.getMessage());
-        }
+        GestionaFicherosV2 gf = new GestionaFicherosV2();
+        gf.importarTexto(file,autorias,libros);
+
 
     }
 
@@ -336,12 +343,8 @@ public class BibliotecaV2 {
      * El método que realiza el funcionamiento se encuentra en la clase 'GestionaFicheros'.
      */
     public static void escribirBin(){
-        try{
-            GestionaFicherosV2 gf = new GestionaFicherosV2();
-            gf.guardarBin(autorias,libros);
-        } catch (IOException e) {
-            System.err.println("Error: " + e.getMessage());
-        }
+        GestionaFicherosV2 gf = new GestionaFicherosV2();
+        gf.guardarBin(autorias,libros);
         System.out.println("Datos guardados en el archivo 'biblioteca.bin'");
     }
 
@@ -351,15 +354,13 @@ public class BibliotecaV2 {
      * El método que realiza el funcionamiento se encuentra en la clase 'GestionaFicheros'.
      */
     public static void leerBin(){
-        try{
-            GestionaFicherosV2 gf = new GestionaFicherosV2();
-            gf.importar(autorias,libros);
-            System.out.println("Datos importados al programa desde el archivo 'biblioteca.bin'");
-        } catch (FileNotFoundException e){
-            System.err.println("Fichero no encontrado, no se ha podido importar nada.");
-        }
-        catch (IOException | ClassNotFoundException e) {
-            System.err.println("Error: " + e.getMessage());
-        }
+        GestionaFicherosV2 gf = new GestionaFicherosV2();
+        gf.importar(autorias,libros);
+        System.out.println("Datos importados al programa desde el archivo 'biblioteca.bin'");
+    }
+
+    public static void guardarEnBBDD(){
+        Conexion.crearTablas();
+        //TODO
     }
 }

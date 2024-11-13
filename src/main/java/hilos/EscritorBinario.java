@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class EscritorBinario extends Thread{
 
-    private static File file = new File("./files/libros.txt");
+    private static File file = new File("./files/libros.bin");
     private static ArrayList<Autoria> autorias;
     private static ArrayList<Libro> libros;
 
@@ -26,9 +26,9 @@ public class EscritorBinario extends Thread{
             oos.writeObject(libros);
 
         } catch (FileNotFoundException e) {
-            e.printStackTrace(); //TODO: buen mensaje de error
+            System.err.println("Fichero no encontrado: " + e.getMessage());
         } catch (IOException e) {
-            e.printStackTrace(); //TODO: buen mensaje de error
+            System.err.println("Error: " + e.getMessage());
         }
     }
 }

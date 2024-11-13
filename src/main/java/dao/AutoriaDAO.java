@@ -24,26 +24,26 @@ public class AutoriaDAO {
         try(Connection c = Conexion.conectar()){
             PreparedStatement s = c.prepareStatement(sql);
 
-            s.setString(1, a.getId());
+            s.setInt(1, a.getId());
             s.setString(2, a.getNombre());
             s.setString(3, a.getApellido());
 
             filas = s.executeUpdate();
 
         } catch (SQLException e){
-            e.printStackTrace(); //TODO: buen mensaje de error
+            System.err.println("Error de SQL en create Autoria: " + e.getMessage());
         }
 
         return filas;
     }
 
-    public static Autoria read(String id){
+    public static Autoria read(int id){
         Autoria autoria = null;
         String sql = "select * from autoria where id = ?";
 
         try (Connection c = Conexion.conectar()){
             PreparedStatement p = c.prepareStatement(sql);
-            p.setString(1, id);
+            p.setInt(1, id);
 
             ResultSet rs = p.executeQuery();
             if(rs.next()){
@@ -54,7 +54,7 @@ public class AutoriaDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); //TODO: buen mensaje de error
+            System.err.println("Error de SQL en read Autoria: " + e.getMessage());
         }
 
         return autoria;
@@ -69,30 +69,30 @@ public class AutoriaDAO {
 
             p.setString(1, a.getNombre());
             p.setString(2, a.getApellido());
-            p.setString(3, a.getId());
+            p.setInt(3, a.getId());
 
             filas = p.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace(); //TODO: buen mensaje de error
+            System.err.println("Error de SQL en update Autoria: " + e.getMessage());
         }
 
         return filas;
     }
 
-    public static int delete(String id){
+    public static int delete(int id){
         int filas = -1;
         String sql = "delete from autoria where id = ?";
 
         try(Connection c = Conexion.conectar()){
             PreparedStatement p = c.prepareStatement(sql);
 
-            p.setString(1, id);
+            p.setInt(1, id);
 
             filas = p.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace(); //TODO: buen mensaje de error
+            System.err.println("Error de SQL en delete Autoria: " + e.getMessage());
         }
 
         return filas;
@@ -108,9 +108,9 @@ public class AutoriaDAO {
             PreparedStatement p = c.prepareStatement(sql);
 
             ResultSet rs = p.executeQuery();
-            if(rs.next()){
+            while(rs.next()){
 
-                String id = rs.getString("id");
+                int id = rs.getInt("id");
                 String nombre = rs.getString("nombre");
                 String apellido = rs.getString("apellido");
 
@@ -119,15 +119,25 @@ public class AutoriaDAO {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); //TODO: buen mensaje de error
+            System.err.println("Error de SQL en readAll Autoria: " + e.getMessage());
         }
 
         return autorias;
     }
 
     public static int createOrUpdateAll(ArrayList<Autoria> a){
-        int filas = -1;
-        //TODO
+        int filas = 0;
+        ArrayList<Autoria> autorias = a;
+        for(Autoria autoriaArray : autorias){
+             Autoria autoria = read(autoriaArray.getId());
+             if(autoria == null){
+                 create(autoriaArray);
+                 filas++;
+             } else{
+                 update(autoriaArray);
+                 filas++;
+             }
+        }
         return filas;
     }
 }

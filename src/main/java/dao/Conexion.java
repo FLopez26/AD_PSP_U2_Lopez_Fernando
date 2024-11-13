@@ -17,7 +17,7 @@ public class Conexion {
 
     public static boolean crearTablas(){
         String sqlAu = "create table if not exists autoria " +
-                "(id varchar(50) primary key," +
+                "(id int primary key," +
                 "nombre varchar(50) not null," +
                 "apellido varchar(50) not null);";
         try(Connection c = conectar()){
@@ -27,13 +27,13 @@ public class Conexion {
             String sqlLi = "create table if not exists libro " +
                     "(isbn varchar(15) primary key," +
                     "titulo varchar(50) not null," +
-                    "autoria varchar(50) not null," +
-                    "foreign key (autoria) references autoria(id) );";
+                    "autoria_id int not null," +
+                    "foreign key (autoria_id) references autoria(id) );";
             st = c.createStatement();
             st.executeUpdate(sqlLi);
 
         } catch (SQLException e) {
-            e.printStackTrace(); //TODO: buen mensaje de error
+            System.err.println("Error de SQL al crear las tablas: " + e.getMessage());
             return false;
         }
         return false;

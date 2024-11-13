@@ -17,7 +17,7 @@ public class LibroDAO {
         int filas = -1;
 
         String sql = "insert into libro " +
-                "(isbn, titulo, autoria)" +
+                "(isbn, titulo, autoria_id)" +
                 "values (?, ?, ?)";
 
         try(Connection c = Conexion.conectar()){
@@ -25,12 +25,12 @@ public class LibroDAO {
 
             s.setString(1, l.getIsbn());
             s.setString(2, l.getTitulo());
-            s.setString(3, l.getAutoria().getId());
+            s.setInt(3, l.getAutoria().getId());
 
             filas = s.executeUpdate();
 
         } catch (SQLException e){
-            e.printStackTrace(); //TODO: buen mensaje de error
+            System.err.println("Error de SQL en create Libro: " + e.getMessage());
         }
 
         return filas;
@@ -38,7 +38,7 @@ public class LibroDAO {
 
     public static Libro read(String isbn){
         Libro libro = null;
-        String sql = "select * from libro where id = ?";
+        String sql = "select * from libro where isbn = ?";
 
         try (Connection c = Conexion.conectar()){
             PreparedStatement p = c.prepareStatement(sql);
@@ -47,13 +47,13 @@ public class LibroDAO {
             ResultSet rs = p.executeQuery();
             if(rs.next()){
                 String titulo = rs.getString("titulo");
-                Autoria autoria = AutoriaDAO.read(rs.getString("autoria"));
+                Autoria autoria = AutoriaDAO.read(rs.getInt("autoria_id"));
 
                 libro = new Libro(isbn, titulo, autoria);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); //TODO: buen mensaje de error
+            System.err.println("Error de SQL en read Libro: " + e.getMessage());
         }
 
         return libro;
@@ -61,19 +61,19 @@ public class LibroDAO {
 
     public static int update(Libro l){
         int filas = -1;
-        String sql = "update libro set titulo = ?, autoria = ? where isbn = ?";
+        String sql = "update libro set titulo = ?, autoria_id = ? where isbn = ?";
 
         try(Connection c = Conexion.conectar()){
             PreparedStatement p = c.prepareStatement(sql);
 
             p.setString(1, l.getTitulo());
-            p.setString(2, l.getAutoria().getId());
+            p.setInt(2, l.getAutoria().getId());
             p.setString(3, l.getIsbn());
 
             filas = p.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace(); //TODO: buen mensaje de error
+            System.err.println("Error de SQL en update Libro: " + e.getMessage());
         }
 
         return filas;
@@ -81,7 +81,7 @@ public class LibroDAO {
 
     public static int delete(String isbn){
         int filas = -1;
-        String sql = "delete from libro where id = ?";
+        String sql = "delete from libro where isbn = ?";
 
         try(Connection c = Conexion.conectar()){
             PreparedStatement p = c.prepareStatement(sql);
@@ -91,7 +91,7 @@ public class LibroDAO {
             filas = p.executeUpdate();
 
         } catch (SQLException e) {
-            e.printStackTrace(); //TODO: buen mensaje de error
+            System.err.println("Error de SQL en delete Libro: " + e.getMessage());
         }
 
         return filas;
@@ -107,25 +107,36 @@ public class LibroDAO {
             PreparedStatement p = c.prepareStatement(sql);
 
             ResultSet rs = p.executeQuery();
-            if(rs.next()){
+            while(rs.next()){
 
                 String isbn = rs.getString("isbn");
                 String titulo = rs.getString("titulo");
-                Autoria autoria = AutoriaDAO.read(rs.getString("autoria"));
+                Autoria autoria = AutoriaDAO.read(rs.getInt("autoria_id"));
 
                 Libro libro = new Libro(isbn, titulo, autoria);
                 libros.add(libro);
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); //TODO: buen mensaje de error
+            System.err.println("Error de SQL en readAll Libro: " + e.getMessage());
         }
 
         return libros;
     }
 
     public static int createOrUpdateAll(ArrayList<Libro> l){
-        //TODO
-        return -1;
+        int filas = 0;
+        ArrayList<Libro> libros = l;
+        for(Libro libroArray : libros){
+            Libro libro = read(libroArray.getIsbn());
+            if(libro == null){
+                create(libroArray);
+                filas++;
+            } else{
+                update(libroArray);
+                filas++;
+            }
+        }
+        return filas;
     }
 }

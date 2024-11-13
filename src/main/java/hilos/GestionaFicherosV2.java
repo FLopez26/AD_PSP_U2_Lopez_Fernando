@@ -9,18 +9,22 @@ import java.util.ArrayList;
 public class GestionaFicherosV2 {
 
     public void importarTexto(File f, ArrayList<Autoria> autorias, ArrayList<Libro> libros){
-        //TODO
+        LectorTexto lt = new LectorTexto(f, autorias, libros);
+        lt.start();
     }
 
     public void exportar(File f, ArrayList<Autoria> autorias, ArrayList<Libro> libros){
-        //TODO
+        EscritorTexto et = new EscritorTexto(f,autorias,libros);
+        et.start();
     }
 
     public void guardarBin(ArrayList<Autoria> autorias, ArrayList<Libro> libros){
-        //TODO
+        EscritorBinario eb = new EscritorBinario(autorias, libros);
+        eb.start();
     }
 
     public void importar(ArrayList<Autoria> autorias, ArrayList<Libro> libros){
-        //TODO
+        LectorBinario lb = new LectorBinario(autorias, libros);
+        lb.start();
     }
 }

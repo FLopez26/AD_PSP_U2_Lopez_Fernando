@@ -25,6 +25,8 @@ public class EscritorTexto extends Thread{
     public void run(){
 
         synchronized (file){
+
+
             try(PrintWriter pw = new PrintWriter(new FileWriter(file))){
 
                 //Escritura de los objetos 'Autoria' de su ArrayList
@@ -44,7 +46,7 @@ public class EscritorTexto extends Thread{
                 }
 
             } catch (IOException e) {
-                e.printStackTrace(); //TODO: buen mensaje de error
+                System.err.println("Error: " + e.getMessage());
             }
         }
     }
