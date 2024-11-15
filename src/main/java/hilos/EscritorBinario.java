@@ -8,7 +8,7 @@ import java.util.ArrayList;
 
 public class EscritorBinario extends Thread{
 
-    private static File file = new File("./files/libros.bin");
+    private static File file = new File("./files/biblioteca.bin");
     private static ArrayList<Autoria> autorias;
     private static ArrayList<Libro> libros;
 

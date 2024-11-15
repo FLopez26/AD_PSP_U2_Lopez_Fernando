@@ -301,7 +301,8 @@ public class BibliotecaV2 {
                         crearLibro();
                         sigue = false;
                         break;
-                    //Salto el case 2 porque si el usuario desea continuar el boolean 'sigue' debe seguir siendo 'true'
+                    case 2:
+                        break;
                     case 3:
                         sigue = false;
                         break;
