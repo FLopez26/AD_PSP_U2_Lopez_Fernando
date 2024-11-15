@@ -24,31 +24,28 @@ public class Conexion {
      * Función para crear las tablas "autoria" y "libro" en la BBDD.
      * @return
      */
-    public static boolean crearTablas(){
+    public static boolean crearTablas() throws SQLException{
 
         //Sentencia sql para crear la tabla "autoria"
         String sqlAu = "create table if not exists autoria " +
                 "(id int primary key," +
                 "nombre varchar(50) not null," +
                 "apellido varchar(50) not null);";
-        try(Connection c = conectar()){
-            Statement st = c.createStatement();
-            st.executeUpdate(sqlAu);
 
-            //Sentencia sql para crear la tabla "libro"
-            String sqlLi = "create table if not exists libro " +
-                    "(isbn varchar(15) primary key," +
-                    "titulo varchar(50) not null," +
-                    "autoria_id int not null," +
-                    "foreign key (autoria_id) references autoria(id) );";
+        Connection c = conectar();
+        Statement st = c.createStatement();
+        st.executeUpdate(sqlAu);
 
-            st = c.createStatement();
-            st.executeUpdate(sqlLi);
+        //Sentencia sql para crear la tabla "libro"
+        String sqlLi = "create table if not exists libro " +
+                "(isbn varchar(15) primary key," +
+                "titulo varchar(50) not null," +
+                "autoria_id int not null," +
+                "foreign key (autoria_id) references autoria(id) );";
 
-        } catch (SQLException e) {
-            System.err.println("Error de SQL al crear las tablas: " + e.getMessage());
-            return false;
-        }
+        st = c.createStatement();
+        st.executeUpdate(sqlLi);
+
         return false;
     }
 }

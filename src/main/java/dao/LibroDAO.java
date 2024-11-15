@@ -18,7 +18,7 @@ public class LibroDAO {
      * @param l
      * @return
      */
-    public static int create(Libro l){
+    public static int create(Libro l) throws SQLException{
         int filas = -1;
 
         //Sentencia sql
@@ -26,20 +26,15 @@ public class LibroDAO {
                 "(isbn, titulo, autoria_id)" +
                 "values (?, ?, ?)";
 
-        try(Connection c = Conexion.conectar()){
-            PreparedStatement s = c.prepareStatement(sql);
+        Connection c = Conexion.conectar();
+        PreparedStatement s = c.prepareStatement(sql);
 
-            //Inserción de datos en la sentencia
-            s.setString(1, l.getIsbn());
-            s.setString(2, l.getTitulo());
-            s.setInt(3, l.getAutoria().getId());
+        //Inserción de datos en la sentencia
+        s.setString(1, l.getIsbn());
+        s.setString(2, l.getTitulo());
+        s.setInt(3, l.getAutoria().getId());
 
-            filas = s.executeUpdate();
-
-        } catch (SQLException e){
-            System.err.println("Error de SQL en create Libro: " + e.getMessage());
-        }
-
+        filas = s.executeUpdate();
         return filas;
     }
 
@@ -48,7 +43,7 @@ public class LibroDAO {
      * @param isbn
      * @return
      */
-    public static Libro read(String isbn){
+    public static Libro read(String isbn) throws SQLException{
         //Inicializo una Autoria valiendo null de tal forma que si no existe una Autoria con ese id,
         //devolverá uno con valor null
         Libro libro = null;
@@ -56,24 +51,20 @@ public class LibroDAO {
         //Sentencia sql
         String sql = "select * from libro where isbn = ?";
 
-        try (Connection c = Conexion.conectar()){
-            PreparedStatement p = c.prepareStatement(sql);
+        Connection c = Conexion.conectar();
+        PreparedStatement p = c.prepareStatement(sql);
 
-            //Inserción de datos en la sentencia
-            p.setString(1, isbn);
+        //Inserción de datos en la sentencia
+        p.setString(1, isbn);
 
-            ResultSet rs = p.executeQuery();
-            if(rs.next()){
+        ResultSet rs = p.executeQuery();
+        if(rs.next()){
 
-                //Recojo los valores y se lo asigno a variables para luego crear el Libro
-                String titulo = rs.getString("titulo");
-                Autoria autoria = AutoriaDAO.read(rs.getInt("autoria_id"));
+            //Recojo los valores y se lo asigno a variables para luego crear el Libro
+            String titulo = rs.getString("titulo");
+            Autoria autoria = AutoriaDAO.read(rs.getInt("autoria_id"));
 
-                libro = new Libro(isbn, titulo, autoria);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error de SQL en read Libro: " + e.getMessage());
+            libro = new Libro(isbn, titulo, autoria);
         }
 
         return libro;
@@ -84,25 +75,21 @@ public class LibroDAO {
      * @param l
      * @return
      */
-    public static int update(Libro l){
+    public static int update(Libro l) throws SQLException{
         int filas = -1;
 
         //Sentencia sql
         String sql = "update libro set titulo = ?, autoria_id = ? where isbn = ?";
 
-        try(Connection c = Conexion.conectar()){
-            PreparedStatement p = c.prepareStatement(sql);
+        Connection c = Conexion.conectar();
+        PreparedStatement p = c.prepareStatement(sql);
 
-            //Inserción de datos en la sentencia
-            p.setString(1, l.getTitulo());
-            p.setInt(2, l.getAutoria().getId());
-            p.setString(3, l.getIsbn());
+        //Inserción de datos en la sentencia
+        p.setString(1, l.getTitulo());
+        p.setInt(2, l.getAutoria().getId());
+        p.setString(3, l.getIsbn());
 
-            filas = p.executeUpdate();
-
-        } catch (SQLException e) {
-            System.err.println("Error de SQL en update Libro: " + e.getMessage());
-        }
+        filas = p.executeUpdate();
 
         return filas;
     }
@@ -112,23 +99,19 @@ public class LibroDAO {
      * @param isbn
      * @return
      */
-    public static int delete(String isbn){
+    public static int delete(String isbn) throws SQLException{
         int filas = -1;
 
         //Sentencia sql
         String sql = "delete from libro where isbn = ?";
 
-        try(Connection c = Conexion.conectar()){
-            PreparedStatement p = c.prepareStatement(sql);
+        Connection c = Conexion.conectar();
+        PreparedStatement p = c.prepareStatement(sql);
 
-            //Inserción de datos en la sentencia
-            p.setString(1, isbn);
+        //Inserción de datos en la sentencia
+        p.setString(1, isbn);
 
-            filas = p.executeUpdate();
-
-        } catch (SQLException e) {
-            System.err.println("Error de SQL en delete Libro: " + e.getMessage());
-        }
+        filas = p.executeUpdate();
 
         return filas;
     }
@@ -139,29 +122,25 @@ public class LibroDAO {
      * Lee todas los Libros de la BBDD y los devuleve en un ArrayList.
      * @return
      */
-    public static ArrayList<Libro> readAll(){
+    public static ArrayList<Libro> readAll() throws SQLException{
         ArrayList<Libro> libros = new ArrayList<>();
 
         //Sentencia sql
         String sql = "select * from libro";
 
-        try(Connection c = Conexion.conectar()){
-            PreparedStatement p = c.prepareStatement(sql);
+        Connection c = Conexion.conectar();
+        PreparedStatement p = c.prepareStatement(sql);
 
-            ResultSet rs = p.executeQuery();
-            while(rs.next()){
+        ResultSet rs = p.executeQuery();
+        while(rs.next()){
 
-                //Recojo los valores y se lo asigno a variables para luego crear la Autoria y añadirla al ArrayList
-                String isbn = rs.getString("isbn");
-                String titulo = rs.getString("titulo");
-                Autoria autoria = AutoriaDAO.read(rs.getInt("autoria_id"));
+            //Recojo los valores y se lo asigno a variables para luego crear la Autoria y añadirla al ArrayList
+            String isbn = rs.getString("isbn");
+            String titulo = rs.getString("titulo");
+            Autoria autoria = AutoriaDAO.read(rs.getInt("autoria_id"));
 
-                Libro libro = new Libro(isbn, titulo, autoria);
-                libros.add(libro);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error de SQL en readAll Libro: " + e.getMessage());
+            Libro libro = new Libro(isbn, titulo, autoria);
+            libros.add(libro);
         }
 
         return libros;
@@ -175,7 +154,7 @@ public class LibroDAO {
      * @param l
      * @return
      */
-    public static int createOrUpdateAll(ArrayList<Libro> l){
+    public static int createOrUpdateAll(ArrayList<Libro> l) throws SQLException{
         int filas = 0;
         ArrayList<Libro> libros = l;
 

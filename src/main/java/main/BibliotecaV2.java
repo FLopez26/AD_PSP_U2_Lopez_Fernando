@@ -8,8 +8,7 @@ import dao.LibroDAO;
 import hilos.GestionaFicherosV2;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.InputMismatchException;
 import java.util.Scanner;
@@ -24,10 +23,20 @@ public class BibliotecaV2 {
 
         // Creación de tablas en la BBDD y recogida de los datos de las tablas
         System.out.println("---------------------------------");
-        Conexion.crearTablas();
+
+        try{
+            Conexion.crearTablas();
+        } catch (SQLException e) {
+            System.err.println("Error al conectar con la BBDD: " + e.getMessage());
+        }
         System.out.println("Tablas de la BBDD creadas en caso de que no estuvieran.");
-        autorias = AutoriaDAO.readAll();
-        libros = LibroDAO.readAll();
+
+        try{
+            autorias = AutoriaDAO.readAll();
+            libros = LibroDAO.readAll();
+        } catch (SQLException e) {
+            System.err.println("Error al leer las tablas de la BBDD: " + e.getMessage());
+        }
         System.out.println("Información recogida de la BBDD en caso de que hubiera.");
 
         while(opc!=0){
@@ -76,8 +85,12 @@ public class BibliotecaV2 {
                         break;
                     case 0:
                         //Se guardan los datos en la BBDD al cerrar el programa
-                        AutoriaDAO.createOrUpdateAll(autorias);
-                        LibroDAO.createOrUpdateAll(libros);
+                        try{
+                            AutoriaDAO.createOrUpdateAll(autorias);
+                            LibroDAO.createOrUpdateAll(libros);
+                        } catch (SQLException e) {
+                            System.err.println("Error de SQL: " + e.getMessage());
+                        }
                         System.out.println("Datos guardados en la BBDD.");
                         System.out.println("Saliendo del programa.");
                         break;
@@ -178,9 +191,12 @@ public class BibliotecaV2 {
 
             autorias.add(new Autoria(id,nombre,apellido));
             AutoriaDAO.create(new Autoria(id,nombre,apellido));
+
         } catch (InputMismatchException e){
             System.err.println("No es un número");
             String error = sc.nextLine();
+        } catch (SQLException e) {
+            System.err.println("Error de SQL: " + e.getMessage());
         }
     }
 
@@ -233,9 +249,12 @@ public class BibliotecaV2 {
 
             libros.add(new Libro(isbn,nombre,autor));
             LibroDAO.create(new Libro(isbn,nombre,autor));
+
         } catch (InputMismatchException e){
             System.err.println("No es un número");
             String error = sc.nextLine();
+        } catch (SQLException e) {
+            System.err.println("Error de SQL: " + e.getMessage());
         }
     }
 
@@ -265,7 +284,11 @@ public class BibliotecaV2 {
             String isbn = sc.nextLine();
             if(checkIsbn(isbn)){
                 deleteLibro(isbn);
-                LibroDAO.delete(isbn);
+                try {
+                    LibroDAO.delete(isbn);
+                } catch (SQLException e) {
+                    System.err.println("Error de SQL: " + e.getMessage());
+                }
                 sigue = false;
             } else{
                 System.out.println("El ISBN no pertenece a ningún libro, puede:");
@@ -336,7 +359,13 @@ public class BibliotecaV2 {
         GestionaFicherosV2 gf = new GestionaFicherosV2();
         gf.importarTexto(file,autorias,libros);
 
-
+        //Se guardan los datos en la BBDD al guardar la información en el .txt
+        try{
+            AutoriaDAO.createOrUpdateAll(autorias);
+            LibroDAO.createOrUpdateAll(libros);
+        } catch (SQLException e) {
+            System.err.println("Error de SQL: " + e.getMessage());
+        }
     }
 
     //CASO DEL MENÚ 8
@@ -359,5 +388,13 @@ public class BibliotecaV2 {
         GestionaFicherosV2 gf = new GestionaFicherosV2();
         gf.importar(autorias,libros);
         System.out.println("Datos importados al programa desde el archivo 'biblioteca.bin'");
+
+        //Se guardan los datos en la BBDD al guardar la información en el .bin
+        try{
+            AutoriaDAO.createOrUpdateAll(autorias);
+            LibroDAO.createOrUpdateAll(libros);
+        } catch (SQLException e) {
+            System.err.println("Error de SQL: " + e.getMessage());
+        }
     }
 }

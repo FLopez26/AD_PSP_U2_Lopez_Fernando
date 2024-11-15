@@ -17,7 +17,7 @@ public class AutoriaDAO {
      * @param a
      * @return
      */
-    public static int create(Autoria a){
+    public static int create(Autoria a) throws SQLException{
         int filas = -1;
 
         //Sentencia sql
@@ -25,19 +25,15 @@ public class AutoriaDAO {
                 "(id, nombre, apellido)" +
                 "values (?, ?, ?)";
 
-        try(Connection c = Conexion.conectar()){
-            PreparedStatement s = c.prepareStatement(sql);
+        Connection c = Conexion.conectar();
+        PreparedStatement s = c.prepareStatement(sql);
 
-            //Inserción de datos en la sentencia
-            s.setInt(1, a.getId());
-            s.setString(2, a.getNombre());
-            s.setString(3, a.getApellido());
+        //Inserción de datos en la sentencia
+        s.setInt(1, a.getId());
+        s.setString(2, a.getNombre());
+        s.setString(3, a.getApellido());
 
-            filas = s.executeUpdate();
-
-        } catch (SQLException e){
-            System.err.println("Error de SQL en create Autoria: " + e.getMessage());
-        }
+        filas = s.executeUpdate();
 
         return filas;
     }
@@ -47,7 +43,7 @@ public class AutoriaDAO {
      * @param id
      * @return
      */
-    public static Autoria read(int id){
+    public static Autoria read(int id) throws SQLException{
         //Inicializo una Autoria valiendo null de tal forma que si no existe una Autoria con ese id,
         //devolverá uno con valor null
         Autoria autoria = null;
@@ -55,24 +51,20 @@ public class AutoriaDAO {
         //Sentencia sql
         String sql = "select * from autoria where id = ?";
 
-        try (Connection c = Conexion.conectar()){
-            PreparedStatement p = c.prepareStatement(sql);
+        Connection c = Conexion.conectar();
+        PreparedStatement p = c.prepareStatement(sql);
 
-            //Inserción de datos en la sentencia
-            p.setInt(1, id);
+        //Inserción de datos en la sentencia
+        p.setInt(1, id);
 
-            ResultSet rs = p.executeQuery();
-            if(rs.next()){
+        ResultSet rs = p.executeQuery();
+        if(rs.next()){
 
-                //Recojo los valores y se lo asigno a variables para luego crear la Autoria
-                String nombre = rs.getString("nombre");
-                String apellido = rs.getString("apellido");
+            //Recojo los valores y se lo asigno a variables para luego crear la Autoria
+            String nombre = rs.getString("nombre");
+            String apellido = rs.getString("apellido");
 
-                autoria = new Autoria(id, nombre, apellido);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error de SQL en read Autoria: " + e.getMessage());
+            autoria = new Autoria(id, nombre, apellido);
         }
 
         return autoria;
@@ -83,25 +75,21 @@ public class AutoriaDAO {
      * @param a
      * @return
      */
-    public static int update(Autoria a){
+    public static int update(Autoria a) throws SQLException{
         int filas = -1;
 
         //Sentencia sql
         String sql = "update autoria set nombre = ?, apellido = ? where id = ?";
 
-        try(Connection c = Conexion.conectar()){
-            PreparedStatement p = c.prepareStatement(sql);
+        Connection c = Conexion.conectar();
+        PreparedStatement p = c.prepareStatement(sql);
 
-            //Inserción de datos en la sentencia
-            p.setString(1, a.getNombre());
-            p.setString(2, a.getApellido());
-            p.setInt(3, a.getId());
+        //Inserción de datos en la sentencia
+        p.setString(1, a.getNombre());
+        p.setString(2, a.getApellido());
+        p.setInt(3, a.getId());
 
-            filas = p.executeUpdate();
-
-        } catch (SQLException e) {
-            System.err.println("Error de SQL en update Autoria: " + e.getMessage());
-        }
+        filas = p.executeUpdate();
 
         return filas;
     }
@@ -111,23 +99,19 @@ public class AutoriaDAO {
      * @param id
      * @return
      */
-    public static int delete(int id){
+    public static int delete(int id) throws SQLException{
         int filas = -1;
 
         //Sentencia sql
         String sql = "delete from autoria where id = ?";
 
-        try(Connection c = Conexion.conectar()){
-            PreparedStatement p = c.prepareStatement(sql);
+        Connection c = Conexion.conectar();
+        PreparedStatement p = c.prepareStatement(sql);
 
-            //Inserción de datos en la sentencia
-            p.setInt(1, id);
+        //Inserción de datos en la sentencia
+        p.setInt(1, id);
 
-            filas = p.executeUpdate();
-
-        } catch (SQLException e) {
-            System.err.println("Error de SQL en delete Autoria: " + e.getMessage());
-        }
+        filas = p.executeUpdate();
 
         return filas;
     }
@@ -138,29 +122,25 @@ public class AutoriaDAO {
      * Lee todas las Autoria de la BBDD y las devuleve en un ArrayList.
      * @return
      */
-    public static ArrayList<Autoria> readAll(){
+    public static ArrayList<Autoria> readAll() throws SQLException{
         ArrayList<Autoria> autorias = new ArrayList<>();
 
         //Sentencia sql
         String sql = "select * from autoria";
 
-        try(Connection c = Conexion.conectar()){
-            PreparedStatement p = c.prepareStatement(sql);
+        Connection c = Conexion.conectar();
+        PreparedStatement p = c.prepareStatement(sql);
 
-            ResultSet rs = p.executeQuery();
-            while(rs.next()){
+        ResultSet rs = p.executeQuery();
+        while(rs.next()){
 
-                //Recojo los valores y se lo asigno a variables para luego crear la Autoria y añadirla al ArrayList
-                int id = rs.getInt("id");
-                String nombre = rs.getString("nombre");
-                String apellido = rs.getString("apellido");
+            //Recojo los valores y se lo asigno a variables para luego crear la Autoria y añadirla al ArrayList
+            int id = rs.getInt("id");
+            String nombre = rs.getString("nombre");
+            String apellido = rs.getString("apellido");
 
-                Autoria autoria = new Autoria(id, nombre, apellido);
-                autorias.add(autoria);
-            }
-
-        } catch (SQLException e) {
-            System.err.println("Error de SQL en readAll Autoria: " + e.getMessage());
+            Autoria autoria = new Autoria(id, nombre, apellido);
+            autorias.add(autoria);
         }
 
         return autorias;
@@ -174,7 +154,7 @@ public class AutoriaDAO {
      * @param a
      * @return
      */
-    public static int createOrUpdateAll(ArrayList<Autoria> a){
+    public static int createOrUpdateAll(ArrayList<Autoria> a) throws SQLException{
         int filas = 0;
         ArrayList<Autoria> autorias = a;
 
