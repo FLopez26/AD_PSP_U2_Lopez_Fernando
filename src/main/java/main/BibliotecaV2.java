@@ -22,7 +22,7 @@ public class BibliotecaV2 {
         Scanner sc = new Scanner(System.in);
         int opc = -1;
 
-        //
+        // Creación de tablas en la BBDD y recogida de los datos de las tablas
         System.out.println("---------------------------------");
         Conexion.crearTablas();
         System.out.println("Tablas de la BBDD creadas en caso de que no estuvieran.");
@@ -75,6 +75,7 @@ public class BibliotecaV2 {
                         leerBin();
                         break;
                     case 0:
+                        //Se guardan los datos en la BBDD al cerrar el programa
                         AutoriaDAO.createOrUpdateAll(autorias);
                         LibroDAO.createOrUpdateAll(libros);
                         System.out.println("Datos guardados en la BBDD.");
@@ -150,7 +151,7 @@ public class BibliotecaV2 {
      * Crea un autor recibiendo los datos (id, nombre y apellido) del usuario por pantalla.
      * Se comprueba que no exista un autor con su mismo ID y que la entrada sea un dato tipo int.
      * En caso de que surja algún error, se volverá al menú del programa.
-     *
+     * Se añade la Autoria a la BBDD
      */
     public static void crearAutor(){
         Scanner sc = new Scanner(System.in);
@@ -198,7 +199,7 @@ public class BibliotecaV2 {
      * Crea un libro recibiendo los datos (isbn, titulo y autoria) del usuario por pantalla.
      * Se comprueba que exista ya el autor con su ID y que la entrada sea un dato tipo int.
      * En caso de que surja algún error, se volverá al menú del programa.
-     *
+     *Se añade el Libro a la BBDD
      */
     public static void crearLibro(){
         Scanner sc = new Scanner(System.in);
@@ -253,6 +254,7 @@ public class BibliotecaV2 {
      * Elimina un libro introduciendo por pantalla el ISBN.
      * En caso de que el ISBN no coincida con el de ningún libro se ofrecen 3 opciones:
      * Crear un libro desde 0 / Escribir otro ISBN sin salir del método / Volver al menú de inicio
+     * Se elimina el libro de la BBDD
      */
     public static void eliminarLibro(){
         boolean sigue = true;
@@ -291,7 +293,7 @@ public class BibliotecaV2 {
     //CASO DEL MENÚ 6
     /**
      * Pasando por pantalla una ruta de un archivo se van a guardar todos los datos de los ArrayList 'autorias' y 'libros'.
-     * El método que realiza el funcionamiento se encuentra en la clase 'GestionaFicheros'.
+     * Se crea un objeto de la clase GestionaFicherosV2 para realizar la acción.
      */
     public static void exportarTxt(){
         Scanner sc = new Scanner(System.in);
@@ -306,7 +308,6 @@ public class BibliotecaV2 {
             String opcion = sc2.nextLine();
             if(opcion.equals("s")){
                 GestionaFicherosV2 gf = new GestionaFicherosV2();
-                //Aquí se realiza la gestión de excepciones que se puede generar en la clase 'GestionaFicheros'
                 gf.exportar(file,autorias,libros);
 
             }else if(opcion.equals("n")){
@@ -323,7 +324,7 @@ public class BibliotecaV2 {
     /**
      * Pasando por pantalla una ruta de un archivo se van a añadir en los arrayList
      * 'autorias' y 'libros' todos los datos ya guardados.
-     * El método que realiza el funcionamiento se encuentra en la clase 'GestionaFicheros'.
+     * Se crea un objeto de la clase GestionaFicherosV2 para realizar la acción.
      */
     public static void importarTxt(){
         Scanner sc = new Scanner(System.in);
@@ -341,7 +342,7 @@ public class BibliotecaV2 {
     //CASO DEL MENÚ 8
     /**
      * Se guardarán todos los datos de los ArrayList 'autorias' y 'libros' en un fichero binario (./files/biblioteca.bin).
-     * El método que realiza el funcionamiento se encuentra en la clase 'GestionaFicheros'.
+     * Se crea un objeto de la clase GestionaFicherosV2 para realizar la acción.
      */
     public static void escribirBin(){
         GestionaFicherosV2 gf = new GestionaFicherosV2();
@@ -352,7 +353,7 @@ public class BibliotecaV2 {
     //CASO DEL MENÚ 9
     /**
      * Se van aexportar los datos del archivo 'biblioteca.bin' a los ArrayList 'autorias' y 'libros'
-     * El método que realiza el funcionamiento se encuentra en la clase 'GestionaFicheros'.
+     * Se crea un objeto de la clase GestionaFicherosV2 para realizar la acción.
      */
     public static void leerBin(){
         GestionaFicherosV2 gf = new GestionaFicherosV2();
