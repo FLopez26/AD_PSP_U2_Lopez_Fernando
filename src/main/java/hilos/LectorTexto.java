@@ -18,10 +18,17 @@ public class LectorTexto extends Thread{
         this.libros = libros;
     }
 
+    /**
+     * Lee un fichero de texto y lo carga en las ArrayLists correspondientes.
+     * Siempre escribirá con el mismo formato y se tratan las excepciones dentro, no se lanzan.
+     */
     @Override
     public void run(){
 
+        //Sincronizo con el file para evitar que dos hilos lean al mismo tiempo al fichero.
         synchronized (file){
+
+            //Uso el .clear() en los ArrayList para evitar que se dupliquen los datos al importar el fichero
             autorias.clear();
             libros.clear();
 

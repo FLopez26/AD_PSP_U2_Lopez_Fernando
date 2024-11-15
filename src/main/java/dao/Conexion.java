@@ -7,6 +7,11 @@ import java.sql.Statement;
 
 public class Conexion {
 
+    /**
+     * Función para conectar con la BBDD "biblioteca".
+     * @return
+     * @throws SQLException
+     */
     protected static Connection conectar() throws SQLException{
         String user = "root";
         String pass = "Sandia4you";
@@ -15,7 +20,13 @@ public class Conexion {
         return con;
     }
 
+    /**
+     * Función para crear las tablas "autoria" y "libro" en la BBDD.
+     * @return
+     */
     public static boolean crearTablas(){
+
+        //Sentencia sql para crear la tabla "autoria"
         String sqlAu = "create table if not exists autoria " +
                 "(id int primary key," +
                 "nombre varchar(50) not null," +
@@ -24,11 +35,13 @@ public class Conexion {
             Statement st = c.createStatement();
             st.executeUpdate(sqlAu);
 
+            //Sentencia sql para crear la tabla "libro"
             String sqlLi = "create table if not exists libro " +
                     "(isbn varchar(15) primary key," +
                     "titulo varchar(50) not null," +
                     "autoria_id int not null," +
                     "foreign key (autoria_id) references autoria(id) );";
+
             st = c.createStatement();
             st.executeUpdate(sqlLi);
 

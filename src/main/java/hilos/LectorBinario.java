@@ -17,10 +17,17 @@ public class LectorBinario extends Thread {
         this.libros = libros;
     }
 
+    /**
+     * Le un fichero binario y lo carga en las ArrayLists correspondientes.
+     * Se tratan las excepciones dentro, no se lanzan
+     */
     @Override
     public void run() {
 
+        //Sincronizo con el file para evitar que dos hilos lean al mismo tiempo al fichero.
         synchronized (file){
+
+            //Uso el .clear() en los ArrayList para evitar que se dupliquen los datos al importar el fichero
             autorias.clear();
             libros.clear();
 

@@ -21,11 +21,15 @@ public class EscritorTexto extends Thread{
         this.libros = libros;
     }
 
+    /**
+     * Escribe los ArrayLists de Autorias y Libros en un fichero de texto.
+     * Siempre escribirá con el mismo formato y se tratan las excepciones dentro, no se lanzan.
+     */
     @Override
     public void run(){
 
+        //Sincronizo con el file para evitar que dos hilos escriban al mismo tiempo al fichero.
         synchronized (file){
-
 
             try(PrintWriter pw = new PrintWriter(new FileWriter(file))){
 
